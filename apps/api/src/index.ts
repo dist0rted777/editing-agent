@@ -3,12 +3,16 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import "dotenv/config";
+import dotenv from "dotenv";
 import { registryCatalog } from "@editing-agent/registry";
 import { BrandTokensSchema, EditBlueprintSchema } from "@editing-agent/schema";
+import { directEditBlueprint, transcribeAudio } from "./openrouter";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
+
+// pnpm --filter runs this from apps/api, so load the monorepo-root .env explicitly.
+dotenv.config({ path: path.join(repoRoot, ".env") });
 
 function loadBrand() {
   const brandPath = path.join(repoRoot, "packages/brand/brand.json");
@@ -30,7 +34,13 @@ function loadSkills() {
 
 const app = new Hono();
 
-app.get("/health", (c) => c.json({ ok: true, service: "editing-agent-api" }));
+app.get("/health", (c) =>
+  c.json({
+    ok: true,
+    service: "editing-agent-api",
+    openrouterConfigured: Boolean(process.env.OPENROUTER_API_KEY),
+  })
+);
 
 app.get("/registry", (c) =>
   c.json({ count: registryCatalog.length, components: registryCatalog })
@@ -46,7 +56,6 @@ app.get("/skills", (c) => {
 
 app.get("/brand", (c) => c.json(loadBrand()));
 
-// Endpoint where the AI Director will validate & return a JSON EditBlueprint
 app.post("/blueprint/validate", async (c) => {
   const body = await c.req.json();
   const parsed = EditBlueprintSchema.safeParse(body);
@@ -54,6 +63,48 @@ app.post("/blueprint/validate", async (c) => {
     return c.json({ valid: false, errors: parsed.error.flatten() }, 400);
   }
   return c.json({ valid: true, blueprint: parsed.data });
+});
+
+app.post("/transcribe", async (c) => {
+  const { audioPath, language } = await c.req.json<{
+    audioPath: string;
+    language?: string;
+  }>();
+  const transcript = await transcribeAudio(audioPath, language);
+  return c.json(transcript);
+});
+
+app.post("/direct", async (c) => {
+  const body = await c.req.json<{
+    projectId: string;
+    proxyVideoPath: string;
+    sourceVideoPath: string;
+    styleSkillId: string;
+    audioPath: string;
+    language?: string;
+    processingMode?: "static" | "agentic";
+  }>();
+
+  const skill = loadSkills().find((s) => s.id === body.styleSkillId);
+  if (!skill) {
+    return c.json({ error: `Unknown styleSkillId: ${body.styleSkillId}` }, 400);
+  }
+
+  const brand = loadBrand();
+  const transcript = await transcribeAudio(body.audioPath, body.language);
+  const blueprint = await directEditBlueprint({
+    projectId: body.projectId,
+    proxyVideoPath: body.proxyVideoPath,
+    sourceVideoPath: body.sourceVideoPath,
+    styleSkillId: skill.id,
+    styleSkillMarkdown: skill.content,
+    brand,
+    registry: registryCatalog,
+    transcript,
+    processingMode: body.processingMode,
+  });
+
+  return c.json({ transcript, blueprint });
 });
 
 const port = Number(process.env.PORT ?? 4000);

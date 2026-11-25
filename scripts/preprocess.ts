@@ -14,7 +14,7 @@ const outDir = path.resolve("uploads", baseName);
 fs.mkdirSync(outDir, { recursive: true });
 
 const proxyPath = path.join(outDir, "proxy-720p.mp4");
-const audioPath = path.join(outDir, "audio-16k.wav");
+const audioPath = path.join(outDir, "audio-16k.mp3");
 
 console.log("1/2 Generating lightweight 720p editing proxy...");
 execFileSync(
@@ -40,7 +40,7 @@ execFileSync(
   { stdio: "inherit" }
 );
 
-console.log("2/2 Extracting 16kHz mono audio for word-level transcription...");
+console.log("2/2 Extracting compact 16kHz mono MP3 for OpenRouter transcription...");
 execFileSync(
   "ffmpeg",
   [
@@ -49,11 +49,13 @@ execFileSync(
     resolvedInput,
     "-vn",
     "-acodec",
-    "pcm_s16le",
+    "libmp3lame",
     "-ar",
     "16000",
     "-ac",
     "1",
+    "-b:a",
+    "64k",
     audioPath,
   ],
   { stdio: "inherit" }
