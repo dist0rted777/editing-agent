@@ -4,7 +4,9 @@ dist/
 build/
 out/
 uploads/
+apps/studio/public/uploads/
 *.mp4
 *.mov
 *.wav
+*.mp3
 .DS_Store

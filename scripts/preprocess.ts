@@ -10,13 +10,17 @@ if (!inputPath) {
 
 const resolvedInput = path.resolve(inputPath);
 const baseName = path.basename(resolvedInput, path.extname(resolvedInput));
-const outDir = path.resolve("uploads", baseName);
-fs.mkdirSync(outDir, { recursive: true });
 
-const proxyPath = path.join(outDir, "proxy-720p.mp4");
-const audioPath = path.join(outDir, "audio-16k.mp3");
+const studioMediaDir = path.resolve("apps/studio/public/uploads", baseName);
+const audioOutDir = path.resolve("uploads", baseName);
+fs.mkdirSync(studioMediaDir, { recursive: true });
+fs.mkdirSync(audioOutDir, { recursive: true });
 
-console.log("1/2 Generating lightweight 720p editing proxy...");
+const proxyPath = path.join(studioMediaDir, "proxy-720p.mp4");
+const studioRelativeVideoPath = "uploads/" + baseName + "/proxy-720p.mp4";
+const audioPath = path.join(audioOutDir, "audio-16k.mp3");
+
+console.log("1/2 Generating lightweight 720p editing proxy inside apps/studio/public...");
 execFileSync(
   "ffmpeg",
   [
@@ -61,4 +65,15 @@ execFileSync(
   { stdio: "inherit" }
 );
 
-console.log("Done:", { proxyPath, audioPath });
+console.log("\nPreprocess complete. Use these paths in POST /direct:");
+console.log(
+  JSON.stringify(
+    {
+      proxyVideoPath: proxyPath,
+      sourceVideoPath: studioRelativeVideoPath,
+      audioPath,
+    },
+    null,
+    2
+  )
+);

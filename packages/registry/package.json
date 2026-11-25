@@ -3,12 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./studio": "./src/studio.tsx"
+  },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@editing-agent/schema": "workspace:*"
+    "@editing-agent/schema": "workspace:*",
+    "zod": "4.6.7",
+    "react": "^18.3.1",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12"
   }
 }
