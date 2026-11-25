@@ -1,0 +1,23 @@
+{
+  "companyName": "Your Brand",
+  "colors": {
+    "primary": "#2563EB",
+    "secondary": "#10B981",
+    "background": "#09090B",
+    "surface": "#18181B",
+    "textPrimary": "#FAFAFA",
+    "textMuted": "#A1A1AA"
+  },
+  "typography": {
+    "headingFont": "Inter",
+    "bodyFont": "Inter",
+    "monoFont": "JetBrains Mono"
+  },
+  "motion": {
+    "defaultEasing": "snappy",
+    "fps": 30
+  },
+  "assets": {
+    "logoPath": "packages/brand/assets/logo.svg"
+  }
+}
