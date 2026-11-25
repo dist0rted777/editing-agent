@@ -36,11 +36,14 @@ importers:
         specifier: ^4.6.14
         version: 4.13.21
       zod:
-        specifier: ^3.24.1
-        version: 3.25.76
+        specifier: 4.6.7
+        version: 4.6.7
 
   apps/studio:
     dependencies:
+      '@editing-agent/registry':
+        specifier: workspace:*
+        version: link:../../packages/registry
       '@editing-agent/schema':
         specifier: workspace:*
         version: link:../../packages/schema
@@ -59,6 +62,9 @@ importers:
       remotion:
         specifier: ^4.0.0
         version: 4.0.547(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@types/react':
         specifier: ^18.3.12
@@ -69,12 +75,25 @@ importers:
       '@editing-agent/schema':
         specifier: workspace:*
         version: link:../schema
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      remotion:
+        specifier: ^4.0.0
+        version: 4.0.547(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.32
 
   packages/schema:
     dependencies:
       zod:
-        specifier: ^3.24.1
-        version: 3.25.76
+        specifier: 4.6.7
+        version: 4.6.7
 
 packages:
 
@@ -1582,9 +1601,6 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
@@ -3078,7 +3094,5 @@ snapshots:
   yallist@3.1.1: {}
 
   yallist@4.0.0: {}
-
-  zod@3.25.76: {}
 
   zod@4.6.7: {}

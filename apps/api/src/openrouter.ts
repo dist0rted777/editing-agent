@@ -3,9 +3,9 @@ import path from "node:path";
 import {
   EditBlueprintSchema,
   type BrandTokens,
-  type ComponentManifest,
   type EditBlueprint,
 } from "@editing-agent/schema";
+import { validateSceneProps, type RegistryCatalogEntry } from "@editing-agent/registry";
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
@@ -110,7 +110,7 @@ const DIRECTOR_JSON_SCHEMA = {
           playbackRate: { type: "number" },
           propsJson: {
             type: "string",
-            description: "Valid JSON string matching the selected component's propsExample.",
+            description: "Valid JSON string matching the selected component's propsJsonSchema.",
           },
           directorNote: { type: "string" },
         },
@@ -126,7 +126,7 @@ export interface DirectVideoInput {
   styleSkillId: string;
   styleSkillMarkdown: string;
   brand: BrandTokens;
-  registry: ComponentManifest[];
+  registry: RegistryCatalogEntry[];
   transcript: TranscriptResult;
   processingMode?: "static" | "agentic";
 }
@@ -155,7 +155,7 @@ export async function directEditBlueprint(
   const userText = [
     "Watch the attached product video proxy and review the exact word-level transcript below.",
     "Design a tight, well-paced edit blueprint synced to spoken beats and visual moments.",
-    "For each scene, encode its component props as a valid JSON string inside `propsJson` matching that component's `propsExample`.",
+    "For each scene, encode its component props as a valid JSON string inside `propsJson` that satisfies that component's `propsJsonSchema` (see `propsExample` for a sample).",
     "",
     "=== TRANSCRIPT (WORD TIMESTAMPS) ===",
     JSON.stringify({
@@ -239,6 +239,16 @@ export async function directEditBlueprint(
     if (!validComponentIds.has(scene.componentId)) {
       throw new Error(`Director selected unregistered componentId: "${scene.componentId}"`);
     }
+    let rawProps: unknown;
+    try {
+      rawProps = JSON.parse(scene.propsJson);
+    } catch {
+      throw new Error(`Director returned invalid propsJson for scene "${scene.id}": ${scene.propsJson}`);
+    }
+    const props = validateSceneProps(scene.componentId, rawProps);
+    if (!props.success) {
+      throw new Error(`Director scene "${scene.id}": ${props.error}`);
+    }
     return {
       id: scene.id,
       startSec: scene.startSec,
@@ -248,7 +258,7 @@ export async function directEditBlueprint(
         startInSourceSec: scene.sourceClipStartSec,
         playbackRate: scene.playbackRate || 1,
       },
-      props: JSON.parse(scene.propsJson) as Record<string, unknown>,
+      props: props.data,
       directorNote: scene.directorNote,
     };
   });

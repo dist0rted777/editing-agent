@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "projectId": "starter-demo",
+  "styleSkillId": "clean-saas",
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "sourceVideoPath": "",
+  "scenes": [
+    {
+      "id": "scene-1-hook",
+      "startSec": 0,
+      "durationSec": 2.5,
+      "componentId": "kinetic-hook",
+      "props": {
+        "kicker": "EDITING AGENT v0.1",
+        "headline": "Turn Raw Demos Into Branded Motion",
+        "overlay": false
+      },
+      "directorNote": "Opening hook card."
+    },
+    {
+      "id": "scene-2-callout",
+      "startSec": 2.5,
+      "durationSec": 2.5,
+      "componentId": "kinetic-callout",
+      "props": {
+        "eyebrow": "REGISTRY-DRIVEN",
+        "headline": "Plug In Any Motion Component",
+        "position": "bottom-left"
+      },
+      "directorNote": "Feature callout beat."
+    },
+    {
+      "id": "scene-3-stat",
+      "startSec": 5,
+      "durationSec": 2.2,
+      "componentId": "stat-highlight",
+      "props": {
+        "value": "100%",
+        "label": "Brand-Token Locked",
+        "sublabel": "Zero manual timeline dragging"
+      },
+      "directorNote": "Proof metric beat."
+    },
+    {
+      "id": "scene-4-outro",
+      "startSec": 7.2,
+      "durationSec": 2.3,
+      "componentId": "brand-outro",
+      "props": {
+        "tagline": "Automated Motion Direction",
+        "cta": "Start Building"
+      },
+      "directorNote": "Clean closing brand lockup."
+    }
+  ]
+}

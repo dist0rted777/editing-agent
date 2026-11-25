@@ -48,7 +48,7 @@ export const ComponentManifestSchema = z.object({
   }),
   gpuHeavy: z.boolean().default(false),
   tags: z.array(z.string()),
-  propsExample: z.record(z.unknown()),
+  propsExample: z.record(z.string(), z.unknown()),
 });
 export type ComponentManifest = z.infer<typeof ComponentManifestSchema>;
 
@@ -63,7 +63,7 @@ export const SceneSchema = z.object({
       playbackRate: z.number().positive().default(1),
     })
     .optional(),
-  props: z.record(z.unknown()),
+  props: z.record(z.string(), z.unknown()),
   directorNote: z.string().optional(),
 });
 export type Scene = z.infer<typeof SceneSchema>;
